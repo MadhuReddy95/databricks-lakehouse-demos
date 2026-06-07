@@ -70,7 +70,7 @@ The bundle declares the pipeline's catalog, target schema, compute (serverless),
 ## Repository structure
 
 ```
-Databricks_Demo/
+databricks-lakehouse-demos/
 ├── dlt_demo/                          # Delta Live Tables (bronze/silver/gold, SCD 1 and 2)
 │   ├── setup.ipynb                    # Unity Catalog + storage setup
 │   ├── transformations/               # bronze.sql, silver.sql, gold.sql
