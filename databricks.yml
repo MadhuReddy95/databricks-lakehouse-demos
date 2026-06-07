@@ -6,7 +6,7 @@
 # Docs: https://docs.databricks.com/dev-tools/bundles
 
 bundle:
-  name: databricks_demo
+  name: databricks_lakehouse_demos
 
 # Reusable values (overridable per target or on the CLI with --var)
 variables:

@@ -11,6 +11,10 @@ Real-time micro-batch ingestion of customer records into a Delta **bronze** tabl
 ## Concepts demonstrated
 `readStream` / `writeStream`, schema inference, micro-batch trigger intervals, and checkpointing for fault-tolerant, restartable streams.
 
+## Structured Streaming vs. Auto Loader
+
+This demo uses **plain Structured Streaming** (`format("json")`): the schema is supplied up front and the source directory is re-listed on each trigger. Simple, but it doesn't scale to very high file counts. For the cloud-optimized alternative (a persisted, evolving schema plus efficient incremental file discovery via `cloudFiles`), see the sibling project [`../gizmobox_autoloader`](../gizmobox_autoloader).
+
 ## How to run
 1. Run `setup.ipynb` once to create the catalog, schemas, and volume.
 2. Land the sample files from `Data/` into the volume's `customers_stream` path.
