@@ -28,11 +28,11 @@ resources:
       continuous: false         # triggered runs (cheaper for a demo); set true for continuous mode
       libraries:
         - file:
-            path: DLT_Demo_Project/2_DLT_Demo/transformations/bronze.sql
+            path: dlt_demo/transformations/bronze.sql
         - file:
-            path: DLT_Demo_Project/2_DLT_Demo/transformations/silver.sql
+            path: dlt_demo/transformations/silver.sql
         - file:
-            path: DLT_Demo_Project/2_DLT_Demo/transformations/gold.sql
+            path: dlt_demo/transformations/gold.sql
 
 # Where to deploy
 targets:
