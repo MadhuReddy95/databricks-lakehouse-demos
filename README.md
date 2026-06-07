@@ -1,74 +1,72 @@
-# Databricks: Learn Spark Structured Streaming , Autoloader and Declarative Pipelines(DLT)
+# Databricks Lakehouse Demos — Structured Streaming, Auto Loader & Delta Live Tables
 
-- Spark Structured Streaming → Real-time ETL pipelines
-- Autoloader → Cloud-optimized incremental ingestion
-- Declarative Pipelines (DLT) → Modular, parameterized ETL workflows
+![Databricks](https://img.shields.io/badge/Databricks-FF3621?logo=databricks&logoColor=white)
+![PySpark](https://img.shields.io/badge/PySpark-E25A1C?logo=apachespark&logoColor=white)
+![Delta Lake](https://img.shields.io/badge/Delta%20Lake-00ADD4?logo=delta&logoColor=white)
+![Unity Catalog](https://img.shields.io/badge/Unity%20Catalog-1B3139)
 
-### Folder Structure 
+End-to-end Databricks data-engineering demos covering the three core ingestion and transformation patterns, all built on the **Bronze → Silver → Gold** medallion architecture with Delta Lake and Unity Catalog.
+
+> Built by **Madhushree Reddy** as a hands-on showcase of production-style Databricks pipelines.
+> <!-- Add your LinkedIn URL here, e.g. [LinkedIn](https://www.linkedin.com/in/your-handle) -->
+
+## What this demonstrates
+
+- **Delta Live Tables (DLT)** declarative pipelines: streaming ingest, data-quality `EXPECT` constraints, and change data capture (SCD Type 1 and Type 2).
+- **Spark Structured Streaming**: micro-batch JSON → Delta with checkpointing.
+- **Auto Loader** (`cloudFiles`): cloud-optimized incremental file ingestion with schema evolution.
+- **Unity Catalog** governance: external locations, volumes, catalogs, and schemas.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  L["Landing zone<br/>JSON / CSV in ADLS"] -->|"Auto Loader / readStream"| B["Bronze<br/>raw streaming tables"]
+  B -->|"EXPECT data-quality rules"| S["Silver<br/>cleansed + SCD 1 / SCD 2"]
+  S -->|"joins + aggregations"| G["Gold<br/>materialized views"]
+```
+
+## Projects
+
+| # | Project | Pattern | Key techniques |
+|---|---|---|---|
+| 1 | [`DLT_Demo_Project`](./DLT_Demo_Project) | Delta Live Tables (SQL) | `cloud_files()` bronze ingest, `EXPECT` constraints, `APPLY CHANGES INTO` (SCD 1 and 2), `explode`, gold materialized view |
+| 2 | [`gizmobox_structured_streaming`](./gizmobox_structured_streaming) | Spark Structured Streaming (PySpark) | `readStream` / `writeStream`, schema inference, 10-second micro-batch trigger, checkpointing |
+| 3 | [`gizmobox_autoloader_structured_streaming`](./gizmobox_autoloader_structured_streaming) | Auto Loader (PySpark) | `cloudFiles`, persisted `schemaLocation`, schema evolution via `schemaHints`, checkpointed Delta writes |
+
+## Tech stack
+
+Databricks · PySpark · Spark Structured Streaming · Delta Lake · Delta Live Tables · Unity Catalog · Azure Data Lake Storage (ADLS Gen2)
+
+## Datasets and catalogs
+
+These demos use two synthetic e-commerce datasets, each in its own Unity Catalog:
+
+- **`circuitbox`** — the Delta Live Tables project (customers, orders, addresses).
+- **`gizmobox`** — the Structured Streaming and Auto Loader projects (customer records).
+
+Sample data lives in each project's `Data/` folder. The setup notebooks register the external location, catalogs, schemas, and volumes in Unity Catalog before the pipelines run.
+
+## Running the demos
+
+1. A Databricks workspace with **Unity Catalog** and access to cloud storage (ADLS Gen2, S3, or GCS).
+2. Run each project's **setup notebook** once to create the catalog, schemas, and volumes.
+3. **DLT:** deploy `DLT_Demo_Project/2_DLT_Demo/transformations/*.sql` as a Delta Live Tables pipeline in continuous mode.
+4. **Streaming / Auto Loader:** run the notebooks on a cluster (or serverless) and land files in the volume to watch incremental processing.
+
+## Repository structure
+
 ```
 Databricks_Demo/
-├── DLT_Demo_Project/                         //Notebooks for declarative Spark pipelines
-├── gizmobox_autoloader_structured_streaming/ //Notebooks demonstrating Autoloader ingestion
-├── gizmobox_structured_streaming/            // Notebooks for standard Spark streaming
-├── README.md                                 // This file
+├── DLT_Demo_Project/                          # Delta Live Tables (bronze/silver/gold, SCD 1 and 2)
+│   ├── 1_DLT_Demo_Project_Setup.ipynb         # Unity Catalog + storage setup
+│   ├── 2_DLT_Demo/transformations/            # bronze.sql, silver.sql, gold.sql
+│   └── Data/                                   # sample customers, orders, addresses
+├── gizmobox_structured_streaming/             # Spark Structured Streaming (JSON → Delta)
+├── gizmobox_autoloader_structured_streaming/  # Auto Loader incremental ingestion
+└── README.md
 ```
 
-A demonstration repository showcasing Databricks projects using Spark and structured streaming pipelines, including declarative pipelines and Autoloader-based ingestion. This repo contains three projects that illustrate best practices for building production-ready pipelines in Databricks.
+## License
 
-### Projects
-### 1. Declarative Pipelines
-
-Description:
-Implements a declarative approach for building Spark ETL pipelines.
-Pipelines are modular and configurable.
-Includes parameterized notebook workflows.
-Demonstrates data validation, transformation, and Delta Lake writes.
-
-Key Features:
-Reusable pipeline templates
-Checkpointing for incremental processing
-Config-driven table and path definitions
-
-
-### 2. Spark Structured Streaming
-
-Description:
-Demonstrates real-time data processing using Spark Structured Streaming.
-Reads from JSON, CSV, or Delta sources.
-Performs transformations and aggregations.
-Writes results to Delta tables on a Standard cluster with checkpointing.
-
-Key Features:
-Trigger-based micro-batch processing
-Handles schema evolution and late-arriving data
-
-
-### 3. Autoloader Structured Streaming
-
-Description:
-Demonstrates cloud-optimized streaming ingestion using Databricks Autoloader.
-Automatically detects new files in a cloud storage location.
-Scales efficiently for high-throughput streaming workloads.
-
-Key Features:
-Schema inference and evolution
-Automatic checkpointing
-Can run on serverless or standard clusters
-Demonstrates best practices for Delta Lake streaming writes
-
-
-Prerequisites:
-Databricks workspace with Standard or Serverless clusters
-Python 3.x / PySpark 3.x
-Unity Catalog
-Cloud storage access (Azure Data Lake, AWS S3, or GCP)
-
-
-
-## To Fork This Repository
-1. Go to the [demobricks_demo repo](https://github.com/MadhuReddy95/demobricks_demo)
-2. Click the **Fork** button in the top-right corner
-3. Clone your fork locally:
-
-```bash
-git clone https://github.com/MadhuReddy95/demobricks_demo.git
+Released under the MIT License — see [LICENSE](./LICENSE).
