@@ -15,10 +15,10 @@ Cloud-optimized, incremental ingestion of customer records into a Delta **bronze
 | Scales to high file volume | limited | yes |
 
 ## Setup
-This project reuses the `gizmobox` catalog and volume created by the setup notebook in the sibling project: [`../gizmobox_structured_streaming/setup.ipynb`](../gizmobox_structured_streaming/setup.ipynb). Run that once first.
+This project reuses the `retail_stream` catalog and volume created by the setup notebook in the sibling project: [`../structured_streaming/setup.ipynb`](../structured_streaming/setup.ipynb). Run that once first.
 
 ## How to run
-1. Ensure the `gizmobox` catalog, schemas, and volume exist (run the setup notebook above).
+1. Ensure the `retail_stream` catalog, schemas, and volume exist (run the setup notebook above).
 2. Land the sample files from `Data/` into the Auto Loader source path.
 3. Run `autoloader.ipynb`; rerunning only picks up newly arrived files, Auto Loader remembers what it already processed.
 

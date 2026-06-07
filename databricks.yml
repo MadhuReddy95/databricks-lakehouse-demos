@@ -12,7 +12,7 @@ bundle:
 variables:
   catalog:
     description: Unity Catalog the pipeline publishes its tables to.
-    default: circuitbox
+    default: retail
   target_schema:
     description: Schema (database) inside the catalog for the pipeline output.
     default: deltalake

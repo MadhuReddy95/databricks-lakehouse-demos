@@ -10,6 +10,8 @@ End-to-end Databricks data-engineering demos covering the three core ingestion a
 > Built by **Madhushree Reddy** as a hands-on showcase of production-style Databricks pipelines.
 > <!-- Add your LinkedIn URL here, e.g. [LinkedIn](https://www.linkedin.com/in/your-handle) -->
 
+> _All data in this repo is synthetic and generated for demonstration. This is a personal portfolio project built to practice production-grade Databricks patterns._
+
 ## What this demonstrates
 
 - **Delta Live Tables (DLT)** declarative pipelines: streaming ingest, data-quality `EXPECT` constraints, and change data capture (SCD Type 1 and Type 2).
@@ -31,8 +33,8 @@ flowchart LR
 | # | Project | Pattern | Key techniques |
 |---|---|---|---|
 | 1 | [`dlt_demo`](./dlt_demo) | Delta Live Tables (SQL) | `cloud_files()` bronze ingest, `EXPECT` constraints, `APPLY CHANGES INTO` (SCD 1 and 2), `explode`, gold materialized view |
-| 2 | [`gizmobox_structured_streaming`](./gizmobox_structured_streaming) | Spark Structured Streaming (PySpark) | `readStream` / `writeStream`, schema inference, 10-second micro-batch trigger, checkpointing |
-| 3 | [`gizmobox_autoloader`](./gizmobox_autoloader) | Auto Loader (PySpark) | `cloudFiles`, persisted `schemaLocation`, schema evolution via `schemaHints`, checkpointed Delta writes |
+| 2 | [`structured_streaming`](./structured_streaming) | Spark Structured Streaming (PySpark) | `readStream` / `writeStream`, schema inference, 10-second micro-batch trigger, checkpointing |
+| 3 | [`autoloader`](./autoloader) | Auto Loader (PySpark) | `cloudFiles`, persisted `schemaLocation`, schema evolution via `schemaHints`, checkpointed Delta writes |
 
 ## Tech stack
 
@@ -42,8 +44,8 @@ Databricks · PySpark · Spark Structured Streaming · Delta Lake · Delta Live 
 
 These demos use two synthetic e-commerce datasets, each in its own Unity Catalog:
 
-- **`circuitbox`** — the Delta Live Tables project (customers, orders, addresses).
-- **`gizmobox`** — the Structured Streaming and Auto Loader projects (customer records).
+- **`retail`** — the Delta Live Tables project (customers, orders, addresses).
+- **`retail_stream`** — the Structured Streaming and Auto Loader projects (customer records).
 
 Sample data lives in each project's `Data/` folder. The setup notebooks register the external location, catalogs, schemas, and volumes in Unity Catalog before the pipelines run.
 
@@ -75,8 +77,8 @@ databricks-lakehouse-demos/
 │   ├── setup.ipynb                    # Unity Catalog + storage setup
 │   ├── transformations/               # bronze.sql, silver.sql, gold.sql
 │   └── Data/                          # sample customers, orders, addresses (+ *_violations)
-├── gizmobox_structured_streaming/     # Spark Structured Streaming (JSON → Delta)
-├── gizmobox_autoloader/               # Auto Loader incremental ingestion
+├── structured_streaming/     # Spark Structured Streaming (JSON → Delta)
+├── autoloader/               # Auto Loader incremental ingestion
 ├── databricks.yml                     # Asset Bundle (deploys the DLT pipeline as code)
 └── README.md
 ```

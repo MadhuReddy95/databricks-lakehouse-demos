@@ -23,7 +23,7 @@ dlt_demo/
 `setup.ipynb` initializes the Unity Catalog foundations:
 
 - Storage credential and external location for ADLS (landing and Delta zones).
-- The `circuitbox` catalog, the `landing` / `deltalake` schemas, and an external volume for operational data.
+- The `retail` catalog, the `landing` / `deltalake` schemas, and an external volume for operational data.
 
 ## 2. Pipeline layers (`transformations/`)
 

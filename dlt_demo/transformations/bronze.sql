@@ -6,7 +6,7 @@ SELECT
   *, _metadata.file_path AS input_file_path,
   current_timestamp() AS ingestion_timestamp
 FROM cloud_files(
-  '/Volumes/circuitbox/landing/operational_data/customers/',
+  '/Volumes/retail/landing/operational_data/customers/',
   'json',
   map(
     'cloudFiles.inferColumnTypes', 'true',
@@ -24,7 +24,7 @@ SELECT
   _metadata.file_path AS input_file_path,
   current_timestamp() AS ingestion_timestamp
 FROM cloud_files(
-  '/Volumes/circuitbox/landing/operational_data/orders/',
+  '/Volumes/retail/landing/operational_data/orders/',
   'json',
   map(
     'cloudFiles.inferColumnTypes', 'true',
@@ -41,7 +41,7 @@ SELECT
   _metadata.file_path AS input_file_path,
   current_timestamp() AS ingestion_timestamp
 FROM cloud_files(
-  '/Volumes/circuitbox/landing/operational_data/addresses/',
+  '/Volumes/retail/landing/operational_data/addresses/',
   'csv',
   map(
     'cloudFiles.inferColumnTypes', 'true'
