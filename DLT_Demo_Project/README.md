@@ -1,97 +1,68 @@
-**### Databricks Delta Live Tables Declarative Pipeline**
+# Delta Live Tables — Bronze → Silver → Gold Declarative Pipeline
 
-### Overview
-This project implements an end-to-end streaming data pipeline in Databricks Delta Live Tables (DLT) to automate data ingestion, transformation, and curation using the 
-Bronze - Silver - Gold Lakehouse architecture.
+An end-to-end streaming pipeline in **Databricks Delta Live Tables (DLT)** that ingests raw JSON/CSV from a landing zone and incrementally curates it into analytics-ready Delta tables using the **Bronze → Silver → Gold** Lakehouse architecture.
 
-The pipeline processes raw JSON and CSV files arriving in the landing zone, incrementally transforming them into high-quality Delta tables suitable for analytics and reporting.
+## Project structure
 
-### 🗂️ Project Structure
 ```
-├── 1_DLT_Demo_Project_Setup/
-│   └── setup_notebook.py
-│
-└── 2_DLT_Demo
-    └── transformations/
-    ├── bronze_pipeline.dlt
-    ├── silver_pipeline.dlt
-    └── gold_pipeline.
-│
-└── Data                                //Contains necessary datasets for the project
-    └── addresses/
-    └── customers/
-    └── orders/
+DLT_Demo_Project/
+├── 1_DLT_Demo_Project_Setup.ipynb          # Unity Catalog + ADLS setup (run once)
+├── 2_DLT_Demo/
+│   └── transformations/
+│       ├── bronze.sql                       # raw streaming ingestion (Auto Loader)
+│       ├── silver.sql                       # cleansing + data quality + SCD 1 / SCD 2
+│       └── gold.sql                         # business-ready materialized view
+├── Data/                                    # sample datasets
+│   ├── customers/   (JSON)
+│   ├── orders/      (JSON)
+│   └── addresses/   (CSV)
+└── images/                                  # pipeline screenshots
 ```
 
-### 1. Setup Folder
+## 1. Setup notebook
 
-Purpose:
-Initializes all foundational Unity Catalog and storage configurations required for the data pipeline.
+`1_DLT_Demo_Project_Setup.ipynb` initializes the Unity Catalog foundations:
 
-Key actions:
-Creates storage credentials for secure access to Azure Data Lake (landing zone and delta lake zones).
-Defines external locations and volumes.
-Creates catalogs and schemas (e.g., circuitbox).
+- Storage credential and external location for ADLS (landing and Delta zones).
+- The `circuitbox` catalog, the `landing` / `deltalake` schemas, and an external volume for operational data.
 
+## 2. Pipeline layers (`2_DLT_Demo/transformations/`)
 
-### 2. Transformative Folder:
-Contains all DLT pipeline definitions that handle ingestion, cleansing, and business curation.
+| File | Layer | What it does |
+|---|---|---|
+| `bronze.sql` | Bronze | Streaming ingest from the landing volume via Auto Loader (`cloud_files()`) — JSON for customers/orders, CSV for addresses — with schema inference and evolution. Adds `input_file_path` and `ingestion_timestamp`. |
+| `silver.sql` | Silver | `EXPECT` data-quality constraints (`FAIL UPDATE` / `DROP ROW`), then `APPLY CHANGES INTO` for CDC: **SCD Type 1** (customers, orders) and **SCD Type 2** (addresses). Orders are exploded to line-item grain. |
+| `gold.sql` | Gold | Materialized view joining the curated tables (current SCD-2 rows via `__END_AT IS NULL`) into a customer-order summary with order counts, item totals, and amounts. |
 
-### Pipeline Key Features
-- bronze_pipeline.dlt -	Ingests raw data from landing zone	Uses Auto Loader (cloud_files()) for incremental and schema-evolving ingestion of JSON and CSV files
-- silver_pipeline.dlt	- Cleanses and standardizes bronze data	Implements data quality constraints, and demonstrates SCD Type 1 and SCD Type 2 handling
-- gold_pipeline.dlt	- Produces business-ready datasets	Joins curated data and prepares summary tables for analytics and dashboards
+## Data flow
 
-### Data Flow
-Landing Zone → Deltalake
+Landing zone (ADLS) → Bronze → Silver → Gold
 
-bronze.sql:
-Streaming ingestion from /Volumes/circuitbox/landing/operational_data/.
-JSON files for customers and orders; CSV files for addresses.
-Raw schema inferred automatically using cloud_files() with schema evolution enabled.
+| Domain | Format | Change type | Notes |
+|---|---|---|---|
+| Customers | JSON | SCD Type 1 | latest record overwrites |
+| Orders | JSON | SCD Type 1 | latest transactional state; exploded to line items |
+| Addresses | CSV | SCD Type 2 | history preserved via effective/expiry timestamps |
 
-silver.sql:
-Customers & Orders: Implement SCD Type 1 — latest record overwrites existing data.
-Addresses: Implements SCD Type 2 — tracks historical changes using effective and expiry timestamps.
-Data quality enforced through EXPECT constraints (e.g., valid customer_id, address completeness).
+## How to run
 
-gold.sql:
-Combines curated tables to create analytics-ready datasets.
-Aggregates metrics like order volume, active customers, and address distribution for dashboarding.
+1. Run `1_DLT_Demo_Project_Setup.ipynb` to register the storage credential, external location, volume, catalog, and schemas.
+2. Create a **Delta Live Tables pipeline** pointing at `2_DLT_Demo/transformations/`, and run it in **continuous** mode for near-real-time freshness.
 
-### Execution Steps:
+## Pipeline screenshots
 
-1. Run the Setup Notebook to register:
-Storage credentials
-External locations
-Volumes
-Catalogs and schemas
+**Pipeline settings (continuous mode)**
 
-2. Run the pipelines under transformation folder:
-Deploy and run the Bronze, Silver, and Gold pipelines in sequence using the Databricks Delta Live Tables UI.
-Each pipeline is configured for continuous streaming mode, ensuring near real-time data freshness.
+<img src="images/image1.png" alt="DLT pipeline settings" width="400"/>
 
+**Pipeline DAG (continuous trigger)**
 
-### Domain	Format	Change Type	Description:
-- Customers	JSON	SCD Type 1	Overwrites old records on update
-- Orders	JSON	SCD Type 1	Maintains latest transactional data
-- Addresses	CSV	SCD Type 2	Preserves history with effective and expiry timestamps
-
-### Project Workflow Screenshots
-
-**Declarative Pipeline settings for continuous mode:**
-
-<img src="images/image1.png" alt="Pipeline Diagram" width="400" style="margin-right:50px;"/>
-
-**Declarative Pipeline DAG in continuous trigger mode**
-<img src="images/image2.png" alt="Pipeline Diagram" width="600" style="margin-right:50px;"/>
+<img src="images/image2.png" alt="DLT pipeline DAG" width="600"/>
 
 **Azure cloud data load**
 
-<img src="images/image3.png" alt="Pipeline Diagram" width="500" style="margin-right:50px;"/>
+<img src="images/image3.png" alt="Azure data load" width="500"/>
 
-**Declarative Pipeline DAG visualizing the workflow for new incoming data**
-<img src="images/image4.png" alt="Pipeline Diagram" width="600" style="margin-right:50px;"/>
+**DAG processing new incoming data**
 
-
-
+<img src="images/image4.png" alt="DLT DAG processing new data" width="600"/>
