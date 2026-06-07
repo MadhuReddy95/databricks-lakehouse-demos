@@ -5,28 +5,27 @@ An end-to-end streaming pipeline in **Databricks Delta Live Tables (DLT)** that 
 ## Project structure
 
 ```
-DLT_Demo_Project/
-├── 1_DLT_Demo_Project_Setup.ipynb          # Unity Catalog + ADLS setup (run once)
-├── 2_DLT_Demo/
-│   └── transformations/
-│       ├── bronze.sql                       # raw streaming ingestion (Auto Loader)
-│       ├── silver.sql                       # cleansing + data quality + SCD 1 / SCD 2
-│       └── gold.sql                         # business-ready materialized view
-├── Data/                                    # sample datasets
+dlt_demo/
+├── setup.ipynb                          # Unity Catalog + ADLS setup (run once)
+├── transformations/
+│   ├── bronze.sql                       # raw streaming ingestion (Auto Loader)
+│   ├── silver.sql                       # cleansing + data quality + SCD 1 / SCD 2
+│   └── gold.sql                         # business-ready materialized view
+├── Data/                                # sample datasets (+ *_violations files)
 │   ├── customers/   (JSON)
 │   ├── orders/      (JSON)
 │   └── addresses/   (CSV)
-└── images/                                  # pipeline screenshots
+└── images/                              # pipeline screenshots
 ```
 
 ## 1. Setup notebook
 
-`1_DLT_Demo_Project_Setup.ipynb` initializes the Unity Catalog foundations:
+`setup.ipynb` initializes the Unity Catalog foundations:
 
 - Storage credential and external location for ADLS (landing and Delta zones).
 - The `circuitbox` catalog, the `landing` / `deltalake` schemas, and an external volume for operational data.
 
-## 2. Pipeline layers (`2_DLT_Demo/transformations/`)
+## 2. Pipeline layers (`transformations/`)
 
 | File | Layer | What it does |
 |---|---|---|
@@ -69,8 +68,8 @@ After a run, open the DLT pipeline graph → select a table → **Data quality**
 
 ## How to run
 
-1. Run `1_DLT_Demo_Project_Setup.ipynb` to register the storage credential, external location, volume, catalog, and schemas.
-2. Create a **Delta Live Tables pipeline** pointing at `2_DLT_Demo/transformations/`, and run it in **continuous** mode for near-real-time freshness.
+1. Run `setup.ipynb` to register the storage credential, external location, volume, catalog, and schemas.
+2. Create a **Delta Live Tables pipeline** pointing at `transformations/`, and run it in **continuous** mode for near-real-time freshness. (Or deploy it with the Asset Bundle, see the repo root `databricks.yml`.)
 
 ## Pipeline screenshots
 

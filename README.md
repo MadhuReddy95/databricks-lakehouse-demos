@@ -30,9 +30,9 @@ flowchart LR
 
 | # | Project | Pattern | Key techniques |
 |---|---|---|---|
-| 1 | [`DLT_Demo_Project`](./DLT_Demo_Project) | Delta Live Tables (SQL) | `cloud_files()` bronze ingest, `EXPECT` constraints, `APPLY CHANGES INTO` (SCD 1 and 2), `explode`, gold materialized view |
+| 1 | [`dlt_demo`](./dlt_demo) | Delta Live Tables (SQL) | `cloud_files()` bronze ingest, `EXPECT` constraints, `APPLY CHANGES INTO` (SCD 1 and 2), `explode`, gold materialized view |
 | 2 | [`gizmobox_structured_streaming`](./gizmobox_structured_streaming) | Spark Structured Streaming (PySpark) | `readStream` / `writeStream`, schema inference, 10-second micro-batch trigger, checkpointing |
-| 3 | [`gizmobox_autoloader_structured_streaming`](./gizmobox_autoloader_structured_streaming) | Auto Loader (PySpark) | `cloudFiles`, persisted `schemaLocation`, schema evolution via `schemaHints`, checkpointed Delta writes |
+| 3 | [`gizmobox_autoloader`](./gizmobox_autoloader) | Auto Loader (PySpark) | `cloudFiles`, persisted `schemaLocation`, schema evolution via `schemaHints`, checkpointed Delta writes |
 
 ## Tech stack
 
@@ -51,7 +51,7 @@ Sample data lives in each project's `Data/` folder. The setup notebooks register
 
 1. A Databricks workspace with **Unity Catalog** and access to cloud storage (ADLS Gen2, S3, or GCS).
 2. Run each project's **setup notebook** once to create the catalog, schemas, and volumes.
-3. **DLT:** deploy `DLT_Demo_Project/2_DLT_Demo/transformations/*.sql` as a Delta Live Tables pipeline in continuous mode.
+3. **DLT:** deploy `dlt_demo/transformations/*.sql` as a Delta Live Tables pipeline in continuous mode.
 4. **Streaming / Auto Loader:** run the notebooks on a cluster (or serverless) and land files in the volume to watch incremental processing.
 
 ## Deploy with Databricks Asset Bundles
@@ -71,12 +71,13 @@ The bundle declares the pipeline's catalog, target schema, compute (serverless),
 
 ```
 Databricks_Demo/
-├── DLT_Demo_Project/                          # Delta Live Tables (bronze/silver/gold, SCD 1 and 2)
-│   ├── 1_DLT_Demo_Project_Setup.ipynb         # Unity Catalog + storage setup
-│   ├── 2_DLT_Demo/transformations/            # bronze.sql, silver.sql, gold.sql
-│   └── Data/                                   # sample customers, orders, addresses
-├── gizmobox_structured_streaming/             # Spark Structured Streaming (JSON → Delta)
-├── gizmobox_autoloader_structured_streaming/  # Auto Loader incremental ingestion
+├── dlt_demo/                          # Delta Live Tables (bronze/silver/gold, SCD 1 and 2)
+│   ├── setup.ipynb                    # Unity Catalog + storage setup
+│   ├── transformations/               # bronze.sql, silver.sql, gold.sql
+│   └── Data/                          # sample customers, orders, addresses (+ *_violations)
+├── gizmobox_structured_streaming/     # Spark Structured Streaming (JSON → Delta)
+├── gizmobox_autoloader/               # Auto Loader incremental ingestion
+├── databricks.yml                     # Asset Bundle (deploys the DLT pipeline as code)
 └── README.md
 ```
 
