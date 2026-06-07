@@ -1,0 +1,2 @@
+{"order_id": 13, "customer_id": 1001, "order_timestamp": "2024-10-30 10:00:00", "payment_method": "Bitcoin", "items": [{"item_id": 5, "name": "Tablet", "category": "Electronics", "price": 399, "quantity": 1}], "order_status": "Pending"}
+{"order_id": 14, "customer_id": 1002, "order_timestamp": "2024-10-30 11:30:00", "payment_method": "Credit Card", "items": [{"item_id": 1, "name": "Smartphone", "category": "Electronics", "price": 699, "quantity": 1}], "order_status": "Returned"}

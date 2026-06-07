@@ -54,6 +54,19 @@ Sample data lives in each project's `Data/` folder. The setup notebooks register
 3. **DLT:** deploy `DLT_Demo_Project/2_DLT_Demo/transformations/*.sql` as a Delta Live Tables pipeline in continuous mode.
 4. **Streaming / Auto Loader:** run the notebooks on a cluster (or serverless) and land files in the volume to watch incremental processing.
 
+## Deploy with Databricks Asset Bundles
+
+The Delta Live Tables pipeline is defined as code in [`databricks.yml`](./databricks.yml) using **Databricks Asset Bundles**, so it deploys reproducibly instead of being clicked together in the UI:
+
+```bash
+# set your workspace host in databricks.yml, then:
+databricks bundle validate          # check the config
+databricks bundle deploy -t dev     # create/update the pipeline in your workspace
+databricks bundle run dlt_demo      # trigger a pipeline update
+```
+
+The bundle declares the pipeline's catalog, target schema, compute (serverless), and source files, and ships `dev` and `prod` targets so the same definition deploys to either environment.
+
 ## Repository structure
 
 ```

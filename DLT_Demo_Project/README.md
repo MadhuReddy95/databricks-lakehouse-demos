@@ -44,6 +44,29 @@ Landing zone (ADLS) → Bronze → Silver → Gold
 | Orders | JSON | SCD Type 1 | latest transactional state; exploded to line items |
 | Addresses | CSV | SCD Type 2 | history preserved via effective/expiry timestamps |
 
+## Data quality demonstration
+
+The silver layer enforces data quality with DLT `EXPECT` constraints, and the sample data deliberately includes records that violate them, so you can watch the constraints act. Three behaviors are shown:
+
+- **`ON VIOLATION DROP ROW`** — the bad row is discarded and the pipeline continues.
+- **`ON VIOLATION FAIL UPDATE`** — the pipeline update fails (reserved for keys that must never be null). The violation files intentionally keep `customer_id` / `order_id` valid so they don't halt the run.
+- **Track-only** (no `ON VIOLATION`) — the row is kept but counted as a failed expectation in the pipeline's Data Quality metrics.
+
+The `*_violations` files under `Data/` exercise these:
+
+| File | Record | Violates | Behavior | Outcome |
+|---|---|---|---|---|
+| `customers/customers_violations.json` | customer 1011 (null name) | `valid_customer_name` | DROP ROW | row dropped |
+| | customer 1012 (DOB 1899) | `valid_date_of_birth` | track-only | kept, flagged |
+| | customer 1013 (telephone `"12345"`) | `valid_telephone` | track-only | kept, flagged |
+| | customer 1014 (null email) | `valid_email` | track-only | kept, flagged |
+| `addresses/addresses_violations.csv` | customer 1011 (blank address) | `valid_address` | DROP ROW | row dropped |
+| | customer 1012 (postcode `"123"`) | `valid_postcode` | track-only | kept, flagged |
+| `orders/orders_violations.json` | order 13 (payment `"Bitcoin"`) | `valid_payment_method` | track-only | kept, flagged |
+| | order 14 (status `"Returned"`) | `valid_order_status` | track-only | kept, flagged |
+
+After a run, open the DLT pipeline graph → select a table → **Data quality** tab (or query the pipeline event log) to see per-expectation pass/fail counts and dropped-row totals.
+
 ## How to run
 
 1. Run `1_DLT_Demo_Project_Setup.ipynb` to register the storage credential, external location, volume, catalog, and schemas.
