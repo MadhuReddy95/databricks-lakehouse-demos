@@ -1,0 +1,51 @@
+# Databricks Asset Bundle
+# Deploys the Delta Live Tables pipeline in this repo as code.
+#   databricks bundle validate          # check the config
+#   databricks bundle deploy -t dev      # create/update the pipeline in your workspace
+#   databricks bundle run dlt_demo       # trigger a pipeline update
+# Docs: https://docs.databricks.com/dev-tools/bundles
+
+bundle:
+  name: databricks_demo
+
+# Reusable values (overridable per target or on the CLI with --var)
+variables:
+  catalog:
+    description: Unity Catalog the pipeline publishes its tables to.
+    default: circuitbox
+  target_schema:
+    description: Schema (database) inside the catalog for the pipeline output.
+    default: deltalake
+
+# What to deploy
+resources:
+  pipelines:
+    dlt_demo:
+      name: dlt_demo_pipeline
+      catalog: ${var.catalog}
+      target: ${var.target_schema}
+      serverless: true          # managed compute; no cluster block needed
+      continuous: false         # triggered runs (cheaper for a demo); set true for continuous mode
+      libraries:
+        - file:
+            path: DLT_Demo_Project/2_DLT_Demo/transformations/bronze.sql
+        - file:
+            path: DLT_Demo_Project/2_DLT_Demo/transformations/silver.sql
+        - file:
+            path: DLT_Demo_Project/2_DLT_Demo/transformations/gold.sql
+
+# Where to deploy
+targets:
+  dev:
+    mode: development           # isolates + name-prefixes resources per developer, pauses schedules
+    default: true
+    workspace:
+      # Replace with your Databricks workspace URL:
+      #   Azure: https://adb-XXXXXXXXXXXX.XX.azuredatabricks.net
+      #   AWS:   https://XXXXXXXX.cloud.databricks.com
+      host: https://YOUR-WORKSPACE-HOST
+
+  prod:
+    mode: production            # no name prefixing; intended for the shared/production deployment
+    workspace:
+      host: https://YOUR-WORKSPACE-HOST

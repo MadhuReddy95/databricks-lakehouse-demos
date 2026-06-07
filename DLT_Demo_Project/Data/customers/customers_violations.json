@@ -1,0 +1,4 @@
+{"customer_id": 1011, "customer_name": null, "date_of_birth": "1995-08-14", "telephone": "+1 5550101011", "email": "ghost.user@example.com", "created_date": "2024-10-03"}
+{"customer_id": 1012, "customer_name": "Old Timer", "date_of_birth": "1899-12-31", "telephone": "+1 5550101012", "email": "old.timer@example.com", "created_date": "2024-10-03"}
+{"customer_id": 1013, "customer_name": "Bad Phone", "date_of_birth": "1990-01-01", "telephone": "12345", "email": "bad.phone@example.com", "created_date": "2024-10-03"}
+{"customer_id": 1014, "customer_name": "No Email", "date_of_birth": "1992-05-05", "telephone": "+1 5550101014", "email": null, "created_date": "2024-10-03"}
